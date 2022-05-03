@@ -15,6 +15,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.Objects;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -53,5 +54,28 @@ public class UserServiceImpl implements UserService {
             throw new UsernameNotFoundException(email);
         }
         return new User(userEntity.getEmail(),userEntity.getEncryptedPassword(), new ArrayList<>());
+    }
+
+    @Override
+    public UserDto getUser(String email) {
+        UserEntity userEntity = userRepository.findUserByEmail(email);
+        if(null==userEntity){
+            throw new UsernameNotFoundException(email);
+        }
+        UserDto retValue = new UserDto();
+        BeanUtils.copyProperties(userEntity,retValue);
+        return retValue;
+    }
+
+    @Override
+    public UserDto getUserByUserId(String userId){
+        UserDto retValue = new UserDto();
+        UserEntity userEntity = userRepository.findUserByUserId(userId);
+        if(Objects.isNull(userEntity)){
+            throw new UsernameNotFoundException(userId);
+        }
+        BeanUtils.copyProperties(userEntity,retValue);
+        return retValue;
+
     }
 }
